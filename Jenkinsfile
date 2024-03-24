@@ -12,7 +12,7 @@ pipeline {
     stages {
         stage('Git checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/arifislam007/cicd-project-1.git'
+                git branch: 'main', url: 'https://github.com/arifislam007/java-cicd-multibranch.git'
             }
         }
         stage('Code Compile') {
@@ -47,7 +47,7 @@ pipeline {
         stage('Clone another git branch') {
             steps {
                 dir('test') {
-                    git branch: 'staging', credentialsId: 'gitaccess', url: 'https://github.com/arifislam007/cicd-project-1.git'
+                    git branch: 'staging', credentialsId: 'gitaccess', url: 'https://github.com/arifislam007/java-cicd-multibranch.git'
                     sh "git config user.email 'islam.arif87@gmail.com'"
                     sh "git config user.name 'arifislam007'"
                     sh "cp -f ../deployment.yml ./test/deployment"
