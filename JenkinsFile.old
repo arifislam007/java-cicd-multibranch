@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Check SCM') {
+            steps {
+                git branch: 'main', url: 'https://github.com/page-cloud/spring-bot-jenkins-k8s.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean install'
+            }
+        }
+        stage('Docker Image Build') {
+            steps {
+                sh 'docker build -t spring-java:${BUILD_NUMBER} .'
+            }
+        }
+        stage('Docker Push to Docker Hub') {
+            environment {
+                DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+            }
+            steps {
+                sh "echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin"
+                sh "docker tag spring-java:${BUILD_NUMBER} arifislam/spring-java:${BUILD_NUMBER}"
+                sh "docker push arifislam/spring-java:${BUILD_NUMBER}"
+            }
+        }
+        stage('Remote SSH') {
+            agent any
+            steps {
+                withCredentials([sshUserPrivateKey(credentialsId: 'dockerkey', keyFileVariable: 'identity', usernameVariable: 'user')]) {
+                    script {
+                        def remote = [
+                            name: 'test',
+                            host: '10.200.205.187',
+                            user: 'dockeradmin'
+                        ]
+                        remote.allowAnyHosts = true
+        
+                        // Execute SSH commands on the remote server
+                        sshCommand remote: remote, command: "docker rm -f java-spring"
+                        sshCommand remote: remote, command: "docker run -itd --name java-spring -p 7054:8080 arifislam/spring-java:${BUILD_NUMBER}"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            // Remove the workspace directory after a successful build
+            deleteDir()
+        }
+    }
+}
