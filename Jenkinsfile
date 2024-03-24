@@ -46,15 +46,12 @@ pipeline {
         }
         stage('Clone another git branch') {
             steps {
-                dir('test') {
                     git branch: 'staging', credentialsId: 'gitaccess', url: 'https://github.com/arifislam007/java-cicd-multibranch.git'
                     sh "git config user.email 'islam.arif87@gmail.com'"
                     sh "git config user.name 'arifislam007'"
-                    sh "cp -f ../deployment.yml ./test/deployment"
                     sh "git add ."
                     sh "git commit -m 'update'"
                     git push https://github.com/arifislam007/cicd-project-1.git HEAD:staging
-                }
             }
         }
         
