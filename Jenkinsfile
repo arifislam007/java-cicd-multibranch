@@ -51,7 +51,6 @@ pipeline {
                     sh "git config user.name 'arifislam007'"
                     sh "git add ."
                     sh "git commit -m 'update'"
-                    git push https://github.com/arifislam007/cicd-project-1.git HEAD:staging
             }
         }
         
