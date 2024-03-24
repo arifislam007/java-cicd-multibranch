@@ -46,7 +46,7 @@ pipeline {
         }
         stage('print var') {
             steps {
-                sh "echo ${BUILD_NUMBER} and ${GITHUB_TOKEN}"
+                sh 'echo this is  ${BUILD_NUMBER} and ${GITHUB_TOKEN}'
             }
         }
         stage('Git Push') {
