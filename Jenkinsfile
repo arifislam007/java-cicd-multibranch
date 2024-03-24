@@ -44,14 +44,22 @@ pipeline {
                 sh "sed -i 's/spring-bot:base/my-cicd:${BUILD_NUMBER}/' ./deployment.yml"
             }
         }
+        stage('Update Deployment File') {
+        environment {
+            GIT_REPO_NAME = "java-cicd-multibranch"
+            GIT_USER_NAME = "arifislam007"
+        }
         stage('Clone another git branch') {
             steps {
-                    git branch: 'staging', credentialsId: 'gitaccess', url: 'https://github.com/arifislam007/java-cicd-multibranch.git'
-                    sh "git config user.email 'islam.arif87@gmail.com'"
-                    sh "git config user.name 'arifislam007'"
-                    sh "git add ."
-                    sh "git commit -m 'update'"
-                    sh "git push --set-upstream origin staging"
+                withCredentials([string(credentialsId: 'gitaccess', variable: 'GITHUB_TOKEN')]){
+                    sh '''
+                        git config user.email 'islam.arif87@gmail.com'
+                        git config user.name 'arifislam007'
+                        git add .
+                        git commit -m 'update'
+                        git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:staging
+                    '''
+                }
             }
         }
         
