@@ -44,12 +44,11 @@ pipeline {
                 sh "sed -i 's/spring-bot:base/my-cicd:${BUILD_NUMBER}/' ./deployment.yml"
             }
         }
-        stage('Update Deployment File') {
+        stage('Git Push') {
         environment {
             GIT_REPO_NAME = "java-cicd-multibranch"
             GIT_USER_NAME = "arifislam007"
-        }
-        stage('Clone another git branch') {
+            }
             steps {
                 withCredentials([string(credentialsId: 'gitaccess', variable: 'GITHUB_TOKEN')]){
                     sh '''
@@ -59,9 +58,8 @@ pipeline {
                         git commit -m 'update'
                         git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:staging
                     '''
-                    }
-               }
-            }   
-        }
+                }
+            }
+        }   
     }
 }
