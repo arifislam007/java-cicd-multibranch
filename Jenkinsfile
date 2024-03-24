@@ -44,6 +44,11 @@ pipeline {
                 sh "sed -i 's/spring-bot:base/my-cicd:${BUILD_NUMBER}/' ./deployment.yml"
             }
         }
+        stage('print var') {
+            steps {
+                sh "echo ${BUILD_NUMBER} and ${GITHUB_TOKEN}"
+            }
+        }
         stage('Git Push') {
         environment {
             GIT_REPO_NAME = "java-cicd-multibranch"
